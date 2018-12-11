@@ -2,27 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Land : MonoBehaviour
 {
 	public float balanceAngle = 10.0f;
 	Rigidbody2D physics;
+	Vector2 previousUp;
+	Vector2 previousPos;
+	float previousRot;
 
 	void Awake()
 	{
 		physics = GetComponent<Rigidbody2D>();
 	}
+
+	void FixedUpdate()
+	{
+		previousUp = transform.up;
+		previousPos = transform.position;
+		previousRot = transform.rotation.eulerAngles.z;
+	}
+
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-		if (Vector2.Angle(transform.up, collision.transform.up) < balanceAngle)
+		float angle = Vector2.Angle(previousUp, collision.transform.up);
+		if (physics.isKinematic)
+		{
+			Debug.Log("Ignore");
+		}
+		else if (angle < balanceAngle)
 		{
 			Debug.Log("Land");
+			physics.bodyType = RigidbodyType2D.Kinematic;
 			physics.velocity = Vector2.zero;
 			physics.angularVelocity = 0.0f;
-			physics.simulated = false;
+			transform.position = previousPos;
+			transform.rotation = Quaternion.Euler(0.0f, 0.0f, previousRot);
 		}
 		else
 		{
-			Debug.Log("Bounce");
+			Debug.LogFormat("Bounce because angle is {0}", angle);
 		}
 	}
 }
