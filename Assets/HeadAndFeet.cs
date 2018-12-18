@@ -21,7 +21,7 @@ public class HeadAndFeet : MonoBehaviour
 		head = path.GetRange(path.Count - 2, 2).ToArray();
 	}
 
-	void FixedUpdate()
+	void Update()
 	{
 		Debug.DrawLine(transform.TransformPoint(head[0]), transform.TransformPoint(head[1]), Color.red);
 		Debug.DrawLine(transform.TransformPoint(feet[0]), transform.TransformPoint(feet[1]), Color.blue);
