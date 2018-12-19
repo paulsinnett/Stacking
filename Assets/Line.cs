@@ -36,4 +36,42 @@ public class Line : MonoBehaviour
 		}
 		return !parallel;
 	}
+
+	// returns true if the given line segment crosses this line
+	// and sets t to the distance along the line starting at the
+	// line start and scaled by the line length so:
+	// t < 0 = line segment crosses before the start point
+	// t = 0.5 = line segment crosses at the half way point
+	// t > 1 = line segment crosses after the end point
+	public bool Intersect(Line line, out float t)
+	{
+		Vector2 a = transform.position;
+		Vector2 b = end.transform.position;
+		Vector2 c = line.transform.position;
+		Vector2 d = line.end.transform.position;
+
+		float tNumerator = (c.y - d.y) * (a.x - c.x) + (d.x - c.x) * (a.y - c.y);
+		float tDenominator = (d.x - c.x) * (a.y - b.y) - (a.x - b.x) * (d.y - c.y);
+
+		float sNumerator = (a.y - b.y) * (a.x - c.x) + (b.x - a.x) * (a.y - c.y);
+		float sDenominator = (d.x - c.x) * (a.y - b.y) - (a.x - b.x) * (d.y - c.y);
+
+		if (Mathf.Abs(sDenominator) <= Mathf.Epsilon || Mathf.Abs(tDenominator) <= Mathf.Epsilon)
+		{
+			t = 0.0f;
+			// parallel
+			return false;
+		}
+
+		float s = sNumerator / sDenominator;
+		if (s < 0.0f || s > 1.0f)
+		{
+			// input line segment doesn't reach my line
+			t = 0.0f;
+			return false;
+		}
+
+		t = tNumerator / tDenominator;
+		return true;
+	}
 }

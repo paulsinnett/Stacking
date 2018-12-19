@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class Intersect : MonoBehaviour
 {
-	public Line lineA;
-	public Line lineB;
+	public Line motion;
+	public Line head;
 
 	void Update()
 	{
-		Vector2 intersect;
-		if (Line.Intersect(lineA, lineB, out intersect))
+		float t;
+		if (head.Intersect(motion, out t))
 		{
-			transform.position = intersect;
+			Vector2 start = head.transform.position;
+			Vector2 direction = (Vector2)head.end.transform.position - start;
+			transform.position = start + t * direction;
 		}
 	}
 }
