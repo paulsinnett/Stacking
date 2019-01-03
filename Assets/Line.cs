@@ -2,34 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Line : MonoBehaviour
+public class Line
 {
-	public Transform end;
+	Vector2 [] p = new Vector2[2];
 
-	void Update()
+	public Line(Vector2 start, Vector2 end)
 	{
-		Vector2 start = transform.position;
-		Vector2 end = this.end.position;
+		Update(start, end);
+	}
 
-		Debug.DrawLine(start, end);
+	public Line Transform(Transform transform)
+	{
+		return new Line(transform.TransformPoint(p[0]), transform.TransformPoint(p[1]));
+	}
+
+	public void DebugDraw()
+	{
+		Debug.DrawLine(p[0], p[1]);
+	}
+
+	public void Update(Vector2 start, Vector2 end)
+	{
+		p[0] = start;
+		p[1] = end;
 	}
 
 	static float CrossProduct(Vector2 a, Vector2 b)
 	{
-		return a.x * b.y - b.x * a.y;
+		return a.x * b.y - a.y * b.x;
 	}
-
-	// returns true if the given line segment crosses this line
-	// and sets t to the distance along the line starting at the
-	// line start and scaled by the line length so:
-	// t < 0 = line segment crosses before the start point
-	// t = 0.5 = line segment crosses at the half way point
-	// t > 1 = line segment crosses after the end point
-	public bool Intersect(Line line, out float t)
+	// returns true if the given line segment crosses my line
+	// and sets t to the distance along my line starting p[0]
+	// and scaled by my line length so:
+	// t < 0 = line segment crosses before p[0]
+	// t = 0.5 = line segment crosses half way
+	// t > 1 = line segment crosses after p[1]
+	public bool IntersectSegment(Line segment, out float t)
 	{
-		Vector2 a = end.transform.position - transform.position;
-		Vector2 b = line.end.transform.position - line.transform.position;
-		Vector2 c = transform.position - line.transform.position;
+		Vector2 a = p[1] - p[0];
+		Vector2 b = segment.p[1] - segment.p[0];
+		Vector2 c = p[0] - segment.p[0];
 
 		float d = CrossProduct(a, b);
 		if (Mathf.Abs(d) <= Mathf.Epsilon)
@@ -47,5 +59,10 @@ public class Line : MonoBehaviour
 
 		t = CrossProduct(b, c) / d;
 		return true;
+	}
+
+	public Vector2 GetPosition(float t)
+	{
+		return p[0] + (p[1] - p[0]) * t;
 	}
 }
