@@ -16,5 +16,9 @@ public class Intersect : MonoBehaviour
 			Vector2 direction = (Vector2)head.end.transform.position - start;
 			transform.position = start + t * direction;
 		}
+		else
+		{
+			transform.position = motion.end.transform.position;
+		}
 	}
 }
